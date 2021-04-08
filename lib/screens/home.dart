@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:login_page/widgets/input_field.dart';
 import 'package:login_page/widgets/membership.dart';
 import 'package:login_page/widgets/gender.dart';
-
+import './dashboard.dart';
+import './ResultsPage.dart';
 
 class Home extends StatelessWidget {
 
@@ -33,7 +34,7 @@ class Home extends StatelessWidget {
                             child: CircleAvatar(
                               backgroundColor: Colors.black87,
                               backgroundImage: NetworkImage(
-                                'https://jideguru.github.io/static/img/profile.png',
+                                'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/BITS_Pilani-Logo.svg/1024px-BITS_Pilani-Logo.svg.png',
                               ),
                               radius: 70.0,
                             ),
@@ -49,7 +50,7 @@ class Home extends StatelessWidget {
                               bottom: 5.0
                             ),
                             child: Text(
-                              "Let's get you set up",
+                              "Welcome to BPHC cab share portal! Please register here.",
                               style: TextStyle(
                                 fontSize: 30.0,
                                 fontWeight: FontWeight.w900,
@@ -66,7 +67,7 @@ class Home extends StatelessWidget {
                               bottom: 5.0
                             ),
                             child: Text(
-                              "It should only take a couple of minutes to pair with your watch",
+                              "Find people to share a cab with based on your travel schedule painlessly",
                               style: TextStyle(
                                 fontSize: 18.0,
                               ),
@@ -145,7 +146,7 @@ class Home extends StatelessWidget {
 
                       //InputField Widget from the widgets folder
                       InputField(
-                        label: "Customer ID",
+                        label: "ID number",
                         content: "22223311111"
                       ),
 
@@ -172,7 +173,15 @@ class Home extends StatelessWidget {
 
                           FlatButton(
                             color: Colors.greenAccent,
-                            onPressed: (){},
+                            onPressed: (){
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return MenuDashboardPage() ;
+                                  },
+                                ),
+                              );
+                            },
                             child: Text(
                               "Save",
                               style: TextStyle(

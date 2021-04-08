@@ -12,6 +12,7 @@ dev_dependencies:
 dependencies:
   flutter:
     sdk: flutter
-
+  http:  ^0.13.1
+  date_time_picker: "^2.0.0"
 flutter:
   uses-material-design: true
