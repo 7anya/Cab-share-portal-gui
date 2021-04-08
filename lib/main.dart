@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login_page/screens/home.dart';
+import 'package:login_page/screens/Register.dart';
 import 'screens/dashboard.dart';
 import 'package:login_page/screens/login.dart';
 import 'package:login_page/screens/request_partner.dart';
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "$title",
       debugShowCheckedModeBanner: false,
-      home:login(),
+      home:Register(),
 
       theme: ThemeData(
         primarySwatch: Colors.blue,
