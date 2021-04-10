@@ -152,6 +152,7 @@ class _pickupDetailsState extends State<pickupDetails> {
                   ],
                 ),
               ))
+
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
