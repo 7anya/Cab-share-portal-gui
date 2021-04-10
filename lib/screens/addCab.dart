@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/PickupDetails.dart';
 
 import 'dashboard.dart';
 import 'package:flutter/material.dart';
@@ -239,14 +240,14 @@ class _add_cabState extends State<add_cab> {
                                   _futureAlbum = createCab(car_no.text,driverName.text,carModel.text,carCapacity.text,driverPhone.text,widget.admin_id);
                                 });
                               },
-                              child: Text("Submit"))
+                              child: Text("Next"))
                         ],
                       ),
                     )))
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
-                  // return MaterialApp(home: MenuDashboardPage());
+                  return MaterialApp(home: pickupDetails(car_no.text));
                   if (snapshot.hasData) {
                     return Text("snapshot.data.title");
                   } else if (snapshot.hasError) {

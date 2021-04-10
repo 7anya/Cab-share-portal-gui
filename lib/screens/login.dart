@@ -54,6 +54,12 @@ class _loginState extends State<login> {
       );
       List<dynamic> trips_result = jsonDecode(trips.body);
       for (int i = 0; i < trips_result.length; i++) {
+        // Globals.Trip temp = Trip(
+        //     trips_result[i]['leave_by_earliest'],
+        //     trips_result[i]['leave_by_latest'],
+        //     trips_result[i]['location'],
+        //     trips_result[i][' destination'],
+        //     "5");
         account.trips.add(Globals.Trip(
             trips_result[i]['leave_by_earliest'].toString(),
             trips_result[i]['leave_by_latest'].toString(),
@@ -62,6 +68,8 @@ class _loginState extends State<login> {
             'status'));
         print(trips_result[i]['leave_by_earliest'].toString()+"hey");
       }
+
+      print(trips_result[0]["s_id"]);
       return Globals.Student.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to create album.');
