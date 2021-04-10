@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/request_partner.dart';
 import './ResultsPage.dart';
+import 'login.dart' as login;
+import 'search.dart';
 final Color backgroundColor = Colors.white;
 
 class MenuDashboardPage extends StatefulWidget {
+ Account account;
+  MenuDashboardPage(this.account);
   @override
   _MenuDashboardPageState createState() => _MenuDashboardPageState();
 }
@@ -15,7 +21,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
-
+  // Account user=login.loginState.
   @override
   void initState() {
     super.initState();
@@ -142,7 +148,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return ResultsPage() ;
+                                          return request_partner(widget.account) ;
                                         },
                                       ),
                                     );
@@ -154,7 +160,16 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                                 margin: EdgeInsets.all(2),
                                 child:RaisedButton(
                                   child: Text("Browse Trips"),
-                                  onPressed: (){},
+                                  onPressed:  (){
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return search(widget.account) ;
+                                        },
+                                      ),
+                                    );
+                                  },
+
 
                                 ) ,
                               ),
@@ -166,7 +181,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return ResultsPage() ;
+                                          return search(widget.account);
                                         },
                                       ),
                                     );
@@ -182,7 +197,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return ResultsPage() ;
+                                          return search(widget.account) ;
                                         },
                                       ),
                                     );
@@ -198,18 +213,18 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                     ),
                   ),
                   SizedBox(height: 20),
-                  Text("Transactions", style: TextStyle(color: Colors.white, fontSize: 20),),
+
                   ListView.separated(
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text("27/10/2020"),
-                          subtitle: Text("From campus to airport"),
-                          trailing: Text("Patners found"),
+                          title: Text(widget.account.trips[index].leave_by_earliest),
+                          subtitle: Text(widget.account.trips[index].location+ ' to ' + widget.account.trips[index].destination),
+                          trailing: Text(widget.account.trips[index].status),
                         );
                       }, separatorBuilder: (context, index) {
                     return Divider(height: 16);
-                  }, itemCount: 10)
+                  }, itemCount: widget.account.trips.length)
                 ],
               ),
             ),

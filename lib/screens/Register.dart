@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_page/screens/adminLogin.dart';
 import 'package:login_page/screens/login.dart';
 import 'package:login_page/widgets/input_field.dart';
 import 'package:login_page/widgets/membership.dart';
@@ -549,12 +550,28 @@ class _RegisterState extends State<Register> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) {
+                                    return adminLogin();
+                                  },
+                                ),
+                              );
+                            },
+                            child: Text("Admin Login here"),
+                          ),
+                          SizedBox(
+                            width: 170.0,
+                          ),
+                          FlatButton(
+                            color: Colors.grey[200],
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
                                     return login();
                                   },
                                 ),
                               );
                             },
-                            child: Text("Login here"),
+                            child: Text("Student Login here"),
                           ),
                           SizedBox(
                             width: 20.0,

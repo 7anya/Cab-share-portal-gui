@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'Globals.dart' as Globals;
 
 final Color backgroundColor = Colors.white;
 
 class ResultsPage extends StatefulWidget {
+  ResultsPage(this.searchResults);
+  List <Globals.SearchResult> searchResults;
+
   @override
   _ResultsPageState createState() => _ResultsPageState();
 }
@@ -36,7 +40,7 @@ List <String> time=["1600-1620","1610-1630","1620-1630","1620-1640","1615-1625",
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(8),
-                  itemCount:name.length,
+                  itemCount:widget.searchResults.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       height: 100,
@@ -49,7 +53,7 @@ List <String> time=["1600-1620","1610-1630","1620-1630","1620-1640","1615-1625",
                             width: 300,
                             height: 100,
 
-                              child: Text(name[index]+"                  Phone: "+phone[index]+"               trip:"+from[index]+ " to "+to[index]+"              time:"+time[index],
+                              child: Text(widget.searchResults[index].leave_by_earliest+ ' '+ widget.searchResults[index].leave_by_latest+' '+widget.searchResults[index].phone_no+''+widget.searchResults[index].name+widget.searchResults[index].gender,
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
 
                           ),

@@ -1,51 +1,15 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
+import 'Globals.dart';
 import 'dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'Globals.dart' as Globals;
-Future<Globals.Album> createAlbum(String username,String password) async {
-  final Map<String,String> body= new Map();
-  body['s_id']=username;
-  body['password']=password;
-  final response = await http.post(
-    Uri.http('127.0.0.1:5000','LoginStudent'),
-    headers: <String, String>{
-      'Content-Type': 'application/json',
-    },
-    body: json.encode(<String, String>{
-      's_id': username,
-      'password':password
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    return Globals.Album.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to create album.');
-  }
-}
-
-// class Album {
-//   final String s_id;
-//   final String name;
-//   final String email;
-//   final String phone_no,room_no,gender;
-//
-//   Album({this.s_id, this.name,this.email,this.phone_no,this.room_no,this.gender});
-//
-//   factory Album.fromJson(Map<String, dynamic> json) {
-//     return Album(
-//       s_id: json['s_id'],
-//       name: json['name'],
-//       email:json['email'],
-//       phone_no: json['phone_no'],
-//       room_no: json['room_no'],
-//       gender: json['gender']
-//     );
-//   }
-// }
-
+import 'dashboard.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'Globals.dart' as Globals;
 
 class login extends StatefulWidget {
   login({Key key}) : super(key: key);
@@ -58,9 +22,52 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
   // final TextEditingController _controller = TextEditingController();
-  Future<Globals.Album> _futureAlbum;
+  Future<Globals.Student> _futureAlbum;
+  Globals.Account account = new Globals.Account();
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
+
+  Future<Globals.Student> loginStudent(String username, String password) async {
+    final response = await http.post(
+      Uri.http('127.0.0.1:5000', 'LoginStudent'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body:
+          json.encode(<String, String>{'s_id': username, 'password': password}),
+    );
+
+    if (response.statusCode == 200) {
+      var result = jsonDecode(response.body);
+      account.user.s_id = result['s_id'];
+      account.user.gender = result['gender'];
+      account.user.name = result['name'];
+      account.user.email = result['email'];
+      account.user.room_no = result['room_no'];
+      account.user.phone_no = result['phone_no'];
+      final trips = await http.post(
+        Uri.http('127.0.0.1:5000', 'trip_history'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(<String, String>{'s_id': username}),
+      );
+      List<dynamic> trips_result = jsonDecode(trips.body);
+      for (int i = 0; i < trips_result.length; i++) {
+        account.trips.add(Globals.Trip(
+            trips_result[i]['leave_by_earliest'].toString(),
+            trips_result[i]['leave_by_latest'].toString(),
+            trips_result[i]['location'].toString(),
+            trips_result[i]['destination'].toString(),
+            'status'));
+        print(trips_result[i]['leave_by_earliest'].toString()+"hey");
+      }
+      return Globals.Student.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create album.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -72,71 +79,65 @@ class _loginState extends State<login> {
         appBar: AppBar(
           title: Text('Create Data Example'),
         ),
-        body:  (_futureAlbum == null)
+        body: (_futureAlbum == null)
             ? Center(
-            child:Container(
-              height: 400,
-              width:300,
-              padding:const EdgeInsets.all(0.0) ,
-              child: Column(
-                children: [
-                  Text('Login'),
-                  TextFormField(
-                    controller: username,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.person),
-                      hintText: 'Username',
-                      labelText: 'Username*',
+                child: Container(
+                height: 400,
+                width: 300,
+                padding: const EdgeInsets.all(0.0),
+                child: Column(
+                  children: [
+                    Text('Login'),
+                    TextFormField(
+                      controller: username,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: 'Username',
+                        labelText: 'Username*',
+                      ),
                     ),
-
-                  ),
-                  TextFormField(
-                    // autofocus: false,
-                    obscureText: true,
-                    controller: password,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.person),
-                      hintText: 'password',
-                      labelText: 'Password*',
+                    TextFormField(
+                      // autofocus: false,
+                      obscureText: true,
+                      controller: password,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: 'password',
+                        labelText: 'Password*',
+                      ),
                     ),
+                    ElevatedButton(
+                        onPressed: () {
+                          username.text.isEmpty || password.text.isEmpty
+                              ? print('missing')
+                              : print("loginnn" +
+                                  username.text +
+                                  " " +
+                                  password.text);
+                          setState(() {
+                            _futureAlbum =
+                                loginStudent(username.text, password.text);
+                            print(_futureAlbum);
+                            // account.user.name = '_futureAlbum';
+                          });
+                        },
+                        child: Text('login'))
+                  ],
+                ),
+              ))
+            : FutureBuilder<Globals.Student>(
+                future: _futureAlbum,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return MaterialApp(home: MenuDashboardPage(account));
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
 
-
-                  ),
-                  ElevatedButton(
-                      onPressed:
-
-                          ()  {
-                        username.text.isEmpty || password.text.isEmpty ? print('missing'):
-                        print("loginnn"+username.text+" "+password.text);
-                        setState(() {
-                          _futureAlbum = createAlbum( username.text,password.text);
-                        });
-
-
-
-                      },
-                      child: Text('login')
-                  )
-                ],
-              ),)
-        ):
-        FutureBuilder<Globals.Album>(
-          future: _futureAlbum,
-          builder: (context, snapshot) {
-
-            if (snapshot.hasData) {
-              return MaterialApp(
-                home: MenuDashboardPage()
-              );
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            return CircularProgressIndicator();
-          },
-        ),
+                  return CircularProgressIndicator();
+                },
+              ),
       ),
-
     );
   }
 }

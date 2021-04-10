@@ -1,13 +1,12 @@
-class Album {
-  final String s_id;
-  final String name;
-  final String email;
-  final String phone_no,room_no,gender;
+class Student {
+  String s_id;
+  String name;
+  String email;
+  String phone_no,room_no,gender;
+  Student({this.s_id, this.name,this.email,this.phone_no,this.room_no,this.gender});
 
-  Album({this.s_id, this.name,this.email,this.phone_no,this.room_no,this.gender});
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
         s_id: json['s_id'],
         name: json['name'],
         email:json['email'],
@@ -18,3 +17,30 @@ class Album {
   }
 }
 
+class Trip
+{
+  String leave_by_earliest;
+  String leave_by_latest;
+  String location,destination;
+  String status;
+  Trip(this.leave_by_earliest, this.leave_by_latest, this.location, this.destination, this.status);
+
+}
+
+class Account
+{
+  Student user= Student();
+  List <Trip> trips= [];
+
+}
+class SearchResult
+{
+  String leave_by_earliest;
+  String leave_by_latest;
+  String location,destination;
+  String s_id;
+  String name;
+  String email;
+  String phone_no,room_no,gender;
+  SearchResult(this.s_id,this.name,this.email,this.phone_no,this.room_no,this.gender,this.leave_by_latest,this.leave_by_earliest,this.destination,this.location,);
+}
