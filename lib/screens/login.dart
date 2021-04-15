@@ -137,7 +137,7 @@ class _loginState extends State<login> {
                 future: _futureAlbum,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return MaterialApp(home: MenuDashboardPage(account));
+                    return  MenuDashboardPage(account);
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }

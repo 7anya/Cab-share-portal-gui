@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/Register.dart';
 import 'package:login_page/screens/request_partner.dart';
 import './ResultsPage.dart';
 import 'login.dart' as login;
 import 'search.dart';
-final Color backgroundColor = Colors.white;
+import 'dart:convert';
+import 'package:login_page/screens/Globals.dart' as Globals;
+import 'package:date_time_picker/date_time_picker.dart';
+import 'dashboard.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+final Color backgroundColor = Color(0xfffEDE7F6);
 
 class MenuDashboardPage extends StatefulWidget {
- Account account;
+  Account account;
+
   MenuDashboardPage(this.account);
+
   @override
   _MenuDashboardPageState createState() => _MenuDashboardPageState();
 }
 
-class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTickerProviderStateMixin {
+class _MenuDashboardPageState extends State<MenuDashboardPage>
+    with SingleTickerProviderStateMixin {
   bool isCollapsed = true;
   double screenWidth, screenHeight;
   final Duration duration = const Duration(milliseconds: 300);
@@ -21,20 +32,214 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
+
   // Account user=login.loginState.
+  Future<void> _showMyDialog(Globals.Trip trip) async {
+    TextEditingController source= TextEditingController();
+    TextEditingController destination= TextEditingController();
+    source.text=trip.location;
+    String leave_by_earliest, leave_by_latest;
+    String from = trip.location;
+    String to = trip.destination;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Trip details'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          DropdownButton<String>(
+                            value: from,
+                            // icon: Icon(Icons.person),
+                            style: TextStyle(color: Colors.black),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.grey,
+                            ),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                from = newValue;
+                              });
+                            },
+                            items: <String>[
+                              'Campus',
+                              'Airport',
+                              'Kacheguda',
+                              'Secunderabad',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          DropdownButton<String>(
+                            value:to,
+                            // icon: Icon(Icons.person),
+                            style: TextStyle(color: Colors.black),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.grey,
+                            ),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                from = newValue;
+                              });
+                            },
+                            items: <String>[
+                              'Campus',
+                              'Airport',
+                              'Kacheguda',
+                              'Secunderabad',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          DateTimePicker(
+                            type: DateTimePickerType.dateTimeSeparate,
+                            dateMask: 'd MMM, yyyy',
+                            initialValue: trip.leave_by_earliest,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                            icon: Icon(Icons.event),
+                            dateLabelText: 'Date',
+                            timeLabelText: "Hour",
+                            onChanged: (val) {
+                              print(val);
+                              leave_by_earliest = val.toString();
+                            },
+                            validator: (val) {
+                              print(val);
+                              return null;
+                            },
+                            onSaved: (val) => {
+                              leave_by_earliest = val.toString()
+                              // print(val);
+                            },
+                          ),
+                          DateTimePicker(
+                            type: DateTimePickerType.dateTimeSeparate,
+                            dateMask: 'dd MMM ,yyyy',
+                            initialValue: trip.leave_by_latest,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                            icon: Icon(Icons.event),
+                            dateLabelText: 'Date',
+                            timeLabelText: "Hour",
+                            onChanged: (val) {
+                              print(val);
+                              leave_by_latest = val.toString();
+                            },
+                            validator: (val) {
+                              print(val);
+
+                              return null;
+                            },
+                            onSaved: (val) => leave_by_latest = val.toString(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Update'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('delete'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Mark as finished'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('find cabs'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: duration);
     _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(_controller);
-    _menuScaleAnimation = Tween<double>(begin: 0.5, end: 1).animate(_controller);
-    _slideAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0)).animate(_controller);
+    _menuScaleAnimation =
+        Tween<double>(begin: 0.5, end: 1).animate(_controller);
+    _slideAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0))
+        .animate(_controller);
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<List<Globals.CabSearchResult>> pickup(
+      String car_no, String location, String startTime, String endTime) async {
+    final response = await http.post(
+      Uri.http('127.0.0.1:5000', 'pickup'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(<String, String>{
+        'location': location,
+        'start_time': startTime,
+        'end_time': endTime,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      List result = jsonDecode(response.body);
+      List<Globals.CabSearchResult> CabSearchResults = [];
+      for (int i = 0; i < result.length; i++) {
+        CabSearchResults.add(Globals.CabSearchResult(
+            result[i][''],
+            result[i][''],
+            result[i][''],
+            result[i][''],
+            result[i][''],
+            result[i]['']));
+      }
+      return CabSearchResults;
+    } else {
+      throw Exception('Failed to create album.');
+    }
   }
 
   @override
@@ -68,15 +273,20 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("Dashboard", style: TextStyle(color: Colors.black, fontSize: 22)),
+                Text("Dashboard",
+                    style: TextStyle(color: Colors.black, fontSize: 22)),
                 SizedBox(height: 10),
-                Text("Messages", style: TextStyle(color: Colors.black, fontSize: 22)),
+                Text("Messages",
+                    style: TextStyle(color: Colors.black, fontSize: 22)),
                 SizedBox(height: 10),
-                Text("Utility Bills", style: TextStyle(color: Colors.black, fontSize: 22)),
+                Text("Utility Bills",
+                    style: TextStyle(color: Colors.black, fontSize: 22)),
                 SizedBox(height: 10),
-                Text("Funds Transfer", style: TextStyle(color: Colors.black, fontSize: 22)),
+                Text("Funds Transfer",
+                    style: TextStyle(color: Colors.black, fontSize: 22)),
                 SizedBox(height: 10),
-                Text("Branches", style: TextStyle(color: Colors.black, fontSize: 22)),
+                Text("Branches",
+                    style: TextStyle(color: Colors.black, fontSize: 22)),
               ],
             ),
           ),
@@ -112,19 +322,19 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       InkWell(
-                        child: Icon(Icons.menu, color: Colors.blue),
-                        onTap: () {
-                          setState(() {
-                            if (isCollapsed)
-                              _controller.forward();
-                            else
-                              _controller.reverse();
-
-                            isCollapsed = !isCollapsed;
-                          });
-                        },
-                      ),
-                      Text("My Trips", style: TextStyle(fontSize: 24, color: Colors.black)),
+                        child: Text("log out"),
+                        onTap:  () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return Register();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                      Text("My Trips",
+                          style: TextStyle(fontSize: 24, color: Colors.black)),
                       Icon(Icons.settings, color: Colors.black),
                     ],
                   ),
@@ -142,42 +352,25 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                             children: [
                               Container(
                                 margin: EdgeInsets.all(2),
-                                child:RaisedButton(
+                                child: RaisedButton(
                                   child: Text("Request a partner"),
-                                  onPressed: (){
+                                  onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return request_partner(widget.account) ;
+                                          return request_partner(
+                                              widget.account);
                                         },
                                       ),
                                     );
                                   },
-
-                                ) ,
-                              ),
+                                ),
+                              ),SizedBox(width: 20,),
                               Container(
                                 margin: EdgeInsets.all(2),
-                                child:RaisedButton(
+                                child: RaisedButton(
                                   child: Text("Browse Trips"),
-                                  onPressed:  (){
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return search(widget.account) ;
-                                        },
-                                      ),
-                                    );
-                                  },
-
-
-                                ) ,
-                              ),
-                              Container(
-                                margin: EdgeInsets.all(2),
-                                child:RaisedButton(
-                                  child: Text("Find a cab"),
-                                  onPressed: (){
+                                  onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
@@ -186,28 +379,26 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                                       ),
                                     );
                                   },
-
-                                ) ,
-                              ),
+                                ),
+                              ),SizedBox(width: 20,),
                               Container(
-                                margin: EdgeInsets.all(30),
-                                child:RaisedButton(
-                                  child: Text("Browse Trips"),
-                                  onPressed: (){
+                                margin: EdgeInsets.all(2),
+                                child: RaisedButton(
+                                  child: Text("Find a cab"),
+                                  onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return search(widget.account) ;
+                                          return search(widget.account);
                                         },
                                       ),
                                     );
                                   },
-
-                                ) ,
+                                ),
                               ),
+
                             ],
                           ),
-
                         ),
                       ],
                     ),
@@ -217,14 +408,33 @@ class _MenuDashboardPageState extends State<MenuDashboardPage> with SingleTicker
                   ListView.separated(
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(widget.account.trips[index].leave_by_earliest),
-                          subtitle: Text(widget.account.trips[index].location+ ' to ' + widget.account.trips[index].destination),
-                          trailing: Text(widget.account.trips[index].status),
+                        return Card(
+                          child: InkWell(
+                            splashColor: Colors.blue.withAlpha(30),
+                            onTap: () {
+                              _showMyDialog(widget.account.trips[index]);
+                            },
+                            child: Container(
+                              width: 300,
+                              height: 100,
+                              child: ListTile(
+                                title: Text(widget
+                                    .account.trips[index].leave_by_earliest),
+                                subtitle: Text(widget
+                                        .account.trips[index].location +
+                                    ' to ' +
+                                    widget.account.trips[index].destination),
+                                trailing:
+                                    Text(widget.account.trips[index].status),
+                              ),
+                            ),
+                          ),
                         );
-                      }, separatorBuilder: (context, index) {
-                    return Divider(height: 16);
-                  }, itemCount: widget.account.trips.length)
+                      },
+                      separatorBuilder: (context, index) {
+                        return Divider(height: 16);
+                      },
+                      itemCount: widget.account.trips.length)
                 ],
               ),
             ),

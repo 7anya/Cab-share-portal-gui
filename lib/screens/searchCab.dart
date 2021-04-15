@@ -3,15 +3,15 @@ import 'Globals.dart' as Globals;
 
 final Color backgroundColor = Colors.white;
 
-class ResultsPage extends StatefulWidget {
-  ResultsPage(this.searchResults);
-  List <Globals.SearchResult> searchResults;
+class CabResultsPage extends StatefulWidget {
+  CabResultsPage(this.searchResults);
+  List <Globals.CabSearchResult> searchResults;
 
   @override
-  _ResultsPageState createState() => _ResultsPageState();
+  _CabResultsPageState createState() => _CabResultsPageState();
 }
 
-class _ResultsPageState extends State<ResultsPage> with SingleTickerProviderStateMixin {
+class _CabResultsPageState extends State<CabResultsPage> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +48,8 @@ class _ResultsPageState extends State<ResultsPage> with SingleTickerProviderStat
                             width: 300,
                             height: 100,
 
-                              child: Text(widget.searchResults[index].leave_by_earliest+ ' '+ widget.searchResults[index].leave_by_latest+' '+widget.searchResults[index].phone_no+''+widget.searchResults[index].name+widget.searchResults[index].gender,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                            child: Text(widget.searchResults[index].carModel+ ' '+ widget.searchResults[index].carCapacity+' '+widget.searchResults[index].driverName+''+widget.searchResults[index].driverName+" "+widget.searchResults[index].driverPhone,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
 
                           ),
                         ),

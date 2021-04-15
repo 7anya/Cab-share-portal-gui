@@ -44,3 +44,10 @@ class SearchResult
   String phone_no,room_no,gender;
   SearchResult(this.s_id,this.name,this.email,this.phone_no,this.room_no,this.gender,this.leave_by_latest,this.leave_by_earliest,this.destination,this.location,);
 }
+class CabSearchResult
+{
+  String car_no, driverName,driverPhone, carCapacity, carModel,trip_id;
+  CabSearchResult(this.driverName,this.driverPhone,this.carCapacity,this.carModel,this.car_no,this.trip_id);
+
+
+}

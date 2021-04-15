@@ -247,7 +247,7 @@ class _add_cabState extends State<add_cab> {
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
-                  return MaterialApp(home: pickupDetails(car_no.text));
+                  return pickupDetails(car_no.text);
                   if (snapshot.hasData) {
                     return Text("snapshot.data.title");
                   } else if (snapshot.hasError) {

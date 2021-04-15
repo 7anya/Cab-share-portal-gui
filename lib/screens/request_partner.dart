@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/Globals.dart' as Globals;
 
 import 'dashboard.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:date_time_picker/date_time_picker.dart';
 class request_partner extends StatefulWidget {
   request_partner(this.account);
 
-  Account account;
+  Globals.Account account;
 
   @override
   _request_partnerState createState() {
@@ -26,19 +26,21 @@ class _request_partnerState extends State<request_partner> {
   String leave_by_earliest, leave_by_latest;
   String from = 'Campus';
   String to = 'Campus';
+  Globals.Account account = new Globals.Account();
 
-  Future<bool> createTrip(String s_id,String from,String to,String leave_by_earliest,String leave_by_latest) async {
+  Future<bool> createTrip(String s_id, String from, String to,
+      String leave_by_earliest, String leave_by_latest) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'trip'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        's_id':s_id,
-        'source':from,
-        'destination':to,
-        'leave_by_earliest':leave_by_earliest,
-        'leave_by_latest':leave_by_latest
+        's_id': s_id,
+        'source': from,
+        'destination': to,
+        'leave_by_earliest': leave_by_earliest,
+        'leave_by_latest': leave_by_latest
       }),
     );
 
@@ -180,27 +182,54 @@ class _request_partnerState extends State<request_partner> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                leave_by_latest.compareTo(leave_by_earliest) ==
-                                        1
-                                    ? print("success")
-                                    : print("loginnn" +
-                                        username.text +
-                                        " " +
-                                        password.text);
-                                setState(() {
-                                  _futureAlbum = createTrip(widget.account.user.s_id,from,to,leave_by_earliest,leave_by_latest);
-                                });
+                                if (leave_by_latest
+                                        .compareTo(leave_by_earliest) ==
+                                    1) {
+                                  print('success');
+                                  setState(() {
+                                    _futureAlbum = createTrip(
+                                        widget.account.user.s_id,
+                                        from,
+                                        to,
+                                        leave_by_earliest,
+                                        leave_by_latest);
+                                    widget.account.trips.add(Globals.Trip(
+                                        leave_by_earliest,
+                                        leave_by_latest,
+                                        from,
+                                        to,
+                                        "pending"));
+                                  });
+                                } else
+                                  print("loginnn" +
+                                      username.text +
+                                      " " +
+                                      password.text);
                               },
-                              child: Text("Submit"))
+                              child: Text("Submit")),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MenuDashboardPage(widget.account);
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Text("Return to dashboard"))
                         ],
                       ),
                     )))
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
-                  // return MaterialApp(home: MenuDashboardPage());
+                  // return
                   if (snapshot.hasData) {
-                    return Text("snapshot.data.title");
+                    return MaterialApp(home: MenuDashboardPage(widget.account));
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }

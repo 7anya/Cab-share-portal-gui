@@ -29,7 +29,7 @@ class _searchState extends State<search> {
   String to = 'Campus';
   List<Globals.SearchResult> searchResults = [];
 
-  Future<bool> createTrip(String s_id, String from, String to,
+  Future<bool> findTrips(String s_id, String from, String to,
       String leave_by_earliest, String leave_by_latest) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'findtrip'),
@@ -204,7 +204,7 @@ class _searchState extends State<search> {
                                         " " +
                                         password.text);
                                 setState(() {
-                                  _futureAlbum = createTrip(
+                                  _futureAlbum = findTrips(
                                       widget.account.user.s_id,
                                       from,
                                       to,
@@ -212,14 +212,26 @@ class _searchState extends State<search> {
                                       leave_by_latest);
                                 });
                               },
-                              child: Text("Submit"))
+                              child: Text("Submit")),
+                          SizedBox(height: 20,),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MenuDashboardPage(widget.account);
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Text("Return to dashboard"))
                         ],
                       ),
                     )))
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
-                  return MaterialApp(home:ResultsPage(searchResults));
+                  return MaterialApp(home: ResultsPage(searchResults));
                   if (snapshot.hasData) {
                     return Text("snapshot.data.title");
                   } else if (snapshot.hasError) {
