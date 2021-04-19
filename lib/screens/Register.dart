@@ -1,17 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:login_page/screens/adminLogin.dart';
-import 'package:login_page/screens/login.dart';
-import 'package:login_page/widgets/input_field.dart';
-import 'package:login_page/widgets/membership.dart';
-import 'package:login_page/widgets/gender.dart';
-import './dashboard.dart';
-import './ResultsPage.dart';
-import 'login.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'dashboard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_page/screens/login.dart';
+
+import 'login.dart';
 
 class Register extends StatefulWidget {
   Register({Key key}) : super(key: key);
@@ -59,571 +53,192 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    var leftPanel = Container(
+      width: MediaQuery.of(context).size.width / 3.3,
+      height: MediaQuery.of(context).size.height,
+      color: Colors.yellow[600],
+      child: Padding(
+        padding: EdgeInsets.only(top: 70.0, right: 50.0, left: 50.0),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: CircleAvatar(
+                  backgroundColor: Colors.black87,
+                  backgroundImage: NetworkImage(
+                    'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/BITS_Pilani-Logo.svg/1024px-BITS_Pilani-Logo.svg.png',
+                  ),
+                  radius: 70.0,
+                ),
+              ),
+              SizedBox(
+                height: 60.0,
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                child: Text(
+                  'Welcome to BPHC cab share portal! Please register here.',
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 5.0,
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                child: Text(
+                  'Find people to share a cab with based on your travel schedule painlessly',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 50.0,
+              ),
+              Container(
+                child: CircleAvatar(
+                  backgroundColor: Colors.black87,
+                  child: Text(
+                    '>',
+                    style: TextStyle(color: Colors.yellow),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    var fields = {
+      'Name': name,
+      'Gender (Male/Female/Non-binary)': gender,
+      'ID Number': id,
+      'Email': email,
+      'Mobile': phone,
+      'Room Number': room,
+      'Set a password': password,
+      'Retype Password': re_password
+    };
+
+    Padding generateField(MapEntry field) {
+      return Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 80.0,
+                child: Text(
+                  field.key,
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              SizedBox(
+                width: 40.0,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 3.7,
+                color: Colors.blue[50],
+                child: TextField(
+                  controller: field.value,
+                  style: TextStyle(
+                    fontSize: 15.0,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(10.0),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue[50],
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue[50],
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    hintText: field.key,
+                    fillColor: Colors.blue[50],
+                  ),
+                ),
+              ),
+            ],
+          ));
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue[50],
       body: (_futureAlbum == null)
-          ?  Padding(
-        padding:
-            EdgeInsets.only(top: 60.0, bottom: 60.0, left: 120.0, right: 120.0),
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-          elevation: 5.0,
-          child: Container(
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width / 3.3,
-                  height: MediaQuery.of(context).size.height,
-                  color: Colors.yellow[600],
-                  child: Padding(
-                    padding:
-                        EdgeInsets.only(top: 70.0, right: 50.0, left: 50.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black87,
-                              backgroundImage: NetworkImage(
-                                'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/BITS_Pilani-Logo.svg/1024px-BITS_Pilani-Logo.svg.png',
-                              ),
-                              radius: 70.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 60.0,
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-                            child: Text(
-                              "Welcome to BPHC cab share portal! Please register here.",
-                              style: TextStyle(
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-                            child: Text(
-                              "Find people to share a cab with based on your travel schedule painlessly",
-                              style: TextStyle(
-                                fontSize: 18.0,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 50.0,
-                          ),
-                          Container(
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black87,
-                              child: Text(
-                                ">",
-                                style: TextStyle(color: Colors.yellow),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                      top: 40.0, right: 70.0, left: 70.0, bottom: 40.0),
-                  child: Column(
+          ? Padding(
+              padding: EdgeInsets.only(
+                  top: 60.0, bottom: 60.0, left: 120.0, right: 120.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40.0)),
+                elevation: 5.0,
+                child: Container(
+                  child: Row(
                     children: <Widget>[
-                      //InputField Widget from the widgets folder
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
+                      leftPanel,
+                      Container(
+                        padding: EdgeInsets.only(
+                            top: 40.0, right: 70.0, left: 70.0, bottom: 40.0),
+                        child: Column(children: <Widget>[
+                          for (var field in fields.entries)
+                            generateField(field),
+                          Row(
                             children: <Widget>[
-                              Container(
-                                width: 80.0,
+                              MaterialButton(
+                                color: Colors.greenAccent,
+                                onPressed: () {
+                                  name.text.isEmpty ||
+                                          password.text.isEmpty ||
+                                          id.text.isEmpty ||
+                                          re_password.text != password.text ||
+                                          email.text.isEmpty ||
+                                          phone.text.isEmpty ||
+                                          gender.text.isEmpty
+                                      ? null
+                                      : {
+                                          // ignore: unrelated_type_equality_checks
+                                          setState(() {
+                                            _futureAlbum = createAlbum();
+                                          })
+                                        };
+                                },
                                 child: Text(
-                                  "Name",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: name,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "Name",
-                                    fillColor: Colors.blue[50],
-                                  ),
+                                  'Register',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-
-                      //Gender Widget from the widgets folder
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Gender(Male/Female)",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: gender,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "Gender(Male/Female)",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-
-                      //InputField Widget from the widgets folder
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "ID Number",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: id,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "20XXXXXXXXX",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-
-                      //InputField Widget from the widgets folder
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Email",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: email,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "abc@hyderabad.bits-pilani.ac.in",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Mobile",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: phone,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "99999999999",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-
-                      //InputField Widget from the widgets folder
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Room number",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: room,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "VK 201",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 20.0),
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Set a password",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: password,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "Password",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              Container(
-                                width: 80.0,
-                                child: Text(
-                                  "Re-enter password",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40.0,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3.7,
-                                color: Colors.blue[50],
-                                child: TextField(
-                                  controller: re_password,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[50],
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    hintText: "Re-enter Password",
-                                    fillColor: Colors.blue[50],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      SizedBox(
-                        height: 40.0,
-                      ),
-
-                      Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 170.0,
                           ),
-                          FlatButton(
-                            color: Colors.grey[200],
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return adminLogin();
-                                  },
-                                ),
-                              );
-                            },
-                            child: Text("Admin Login here"),
-                          ),
-                          SizedBox(
-                            width: 170.0,
-                          ),
-                          FlatButton(
-                            color: Colors.grey[200],
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return login();
-                                  },
-                                ),
-                              );
-                            },
-                            child: Text("Student Login here"),
-                          ),
-                          SizedBox(
-                            width: 20.0,
-                          ),
-                          FlatButton(
-                            color: Colors.greenAccent,
-                            onPressed: () {
-                              name.text.isEmpty ||
-                                      password.text.isEmpty ||
-                                      id.text.isEmpty ||
-                                      re_password.text != password.text ||
-                                      email.text.isEmpty ||
-                                      phone.text.isEmpty ||
-                                      gender.text.isEmpty
-                                  ? null
-                                  : {
-                                      // ignore: unrelated_type_equality_checks
-                                      setState(() {
-                                        _futureAlbum = createAlbum();
-                                      })
-                                    };
-                            },
-                            child: Text(
-                              "Register",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
+                        ]),
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
+            )
+          : FutureBuilder<bool>(
+              future: _futureAlbum,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return MaterialApp(home: login());
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
+
+                return CircularProgressIndicator();
+              },
             ),
-          ),
-        ),
-      ):
-      FutureBuilder<bool>(
-        future: _futureAlbum,
-        builder: (context, snapshot) {
-
-          if (snapshot.hasData) {
-            return MaterialApp(
-                home: login()
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-
-          return CircularProgressIndicator();
-        },
-      ),
     );
   }
 }

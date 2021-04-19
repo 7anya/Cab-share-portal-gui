@@ -1,15 +1,11 @@
 import 'dart:async';
-import 'dart:async';
 import 'dart:convert';
-import 'Globals.dart';
-import 'dashboard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import 'Globals.dart' as Globals;
 import 'dashboard.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'Globals.dart' as Globals;
 
 class login extends StatefulWidget {
   login({Key key}) : super(key: key);
@@ -22,7 +18,6 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
   // final TextEditingController _controller = TextEditingController();
-  Future<Globals.Student> _futureAlbum;
   Globals.Account account = new Globals.Account();
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -53,23 +48,15 @@ class _loginState extends State<login> {
         body: json.encode(<String, String>{'s_id': username}),
       );
       List<dynamic> trips_result = jsonDecode(trips.body);
-      for (int i = 0; i < trips_result.length; i++) {
-        // Globals.Trip temp = Trip(
-        //     trips_result[i]['leave_by_earliest'],
-        //     trips_result[i]['leave_by_latest'],
-        //     trips_result[i]['location'],
-        //     trips_result[i][' destination'],
-        //     "5");
+      for (var i = 0; i < trips_result.length; i++) {
         account.trips.add(Globals.Trip(
             trips_result[i]['leave_by_earliest'].toString(),
             trips_result[i]['leave_by_latest'].toString(),
             trips_result[i]['location'].toString(),
             trips_result[i]['destination'].toString(),
             'status'));
-        print(trips_result[i]['leave_by_earliest'].toString()+"hey");
+        print(trips_result[i]['leave_by_earliest'].toString() + "hey");
       }
-
-      print(trips_result[0]["s_id"]);
       return Globals.Student.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to create album.');
@@ -79,73 +66,88 @@ class _loginState extends State<login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Create Data Example',
+      title: 'Student Login',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Create Data Example'),
-        ),
-        body: (_futureAlbum == null)
-            ? Center(
-                child: Container(
-                height: 400,
-                width: 300,
-                padding: const EdgeInsets.all(0.0),
-                child: Column(
-                  children: [
-                    Text('Login'),
-                    TextFormField(
-                      controller: username,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        hintText: 'Username',
-                        labelText: 'Username*',
-                      ),
+          appBar: AppBar(
+            title: Text('Student Login'),
+          ),
+          body: Center(
+              child: Container(
+                  height: 320,
+                  width: 700,
+                  padding: const EdgeInsets.all(0.0),
+                  child: Card(
+                    color: Colors.lightBlueAccent,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0)),
+                    elevation: 5.0,
+                    child: Column(
+                      children: [
+                        Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Text(
+                              'Login',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 25),
+                            )),
+                        Padding(
+                            padding: EdgeInsets.all(20),
+                            child: TextFormField(
+                              cursorColor: Colors.white,
+                              style: TextStyle(color: Colors.white),
+                              controller: username,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.person),
+                                hintText: 'Username',
+                                labelText: 'Username*',
+                              ),
+                            )),
+                        Padding(
+                            padding: EdgeInsets.all(20),
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.white),
+                              cursorColor: Colors.white,
+                              // autofocus: false,
+                              obscureText: true,
+                              controller: password,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.person),
+                                hintText: 'password',
+                                labelText: 'Password*',
+                              ),
+                            )),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 10, 20, 25),
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        username.text.isEmpty ||
+                                                password.text.isEmpty
+                                            ? print('missing')
+                                            : print("loginnn" +
+                                                username.text +
+                                                " " +
+                                                password.text);
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                          return MenuDashboardPage(account);
+                                        }), (route) => route.isFirst);
+                                      },
+                                      child: Text(
+                                        'Login',
+                                        style: TextStyle(fontSize: 18),
+                                      )))
+                            ])
+                      ],
                     ),
-                    TextFormField(
-                      // autofocus: false,
-                      obscureText: true,
-                      controller: password,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        hintText: 'password',
-                        labelText: 'Password*',
-                      ),
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          username.text.isEmpty || password.text.isEmpty
-                              ? print('missing')
-                              : print("loginnn" +
-                                  username.text +
-                                  " " +
-                                  password.text);
-                          setState(() {
-                            _futureAlbum =
-                                loginStudent(username.text, password.text);
-                            print(_futureAlbum);
-                            // account.user.name = '_futureAlbum';
-                          });
-                        },
-                        child: Text('login'))
-                  ],
-                ),
-              ))
-            : FutureBuilder<Globals.Student>(
-                future: _futureAlbum,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return  MenuDashboardPage(account);
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-
-                  return CircularProgressIndicator();
-                },
-              ),
-      ),
+                  )))),
     );
   }
 }

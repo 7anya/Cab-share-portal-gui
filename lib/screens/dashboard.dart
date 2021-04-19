@@ -1,16 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:login_page/screens/Globals.dart';
-import 'package:login_page/screens/Register.dart';
-import 'package:login_page/screens/request_partner.dart';
-import './ResultsPage.dart';
-import 'login.dart' as login;
-import 'search.dart';
 import 'dart:convert';
-import 'package:login_page/screens/Globals.dart' as Globals;
+
 import 'package:date_time_picker/date_time_picker.dart';
-import 'dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/Globals.dart' as Globals;
+import 'package:login_page/screens/request_partner.dart';
+import 'package:login_page/screens/search.dart';
 
 final Color backgroundColor = Color(0xfffEDE7F6);
 
@@ -28,19 +24,16 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   bool isCollapsed = true;
   double screenWidth, screenHeight;
   final Duration duration = const Duration(milliseconds: 300);
-  AnimationController _controller;
-  Animation<double> _scaleAnimation;
-  Animation<double> _menuScaleAnimation;
-  Animation<Offset> _slideAnimation;
 
   // Account user=login.loginState.
   Future<void> _showMyDialog(Globals.Trip trip) async {
-    TextEditingController source= TextEditingController();
-    TextEditingController destination= TextEditingController();
-    source.text=trip.location;
+    TextEditingController source = TextEditingController();
+    TextEditingController destination = TextEditingController();
+    source.text = trip.location;
     String leave_by_earliest, leave_by_latest;
     String from = trip.location;
     String to = trip.destination;
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -82,7 +75,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                             }).toList(),
                           ),
                           DropdownButton<String>(
-                            value:to,
+                            value: to,
                             // icon: Icon(Icons.person),
                             style: TextStyle(color: Colors.black),
                             underline: Container(
@@ -193,23 +186,6 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: duration);
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(_controller);
-    _menuScaleAnimation =
-        Tween<double>(begin: 0.5, end: 1).animate(_controller);
-    _slideAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0))
-        .animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   Future<List<Globals.CabSearchResult>> pickup(
       String car_no, String location, String startTime, String endTime) async {
     final response = await http.post(
@@ -242,205 +218,102 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     }
   }
 
+  var _selectedIndex = 0;
+
+  Widget getBody(BuildContext context) {
+    switch (_selectedIndex) {
+      case 0: return dashboard(context);
+      case 1: return search(widget.account);
+      case 2: return Text('Not yet implemented!');
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size;
     screenHeight = size.height;
     screenWidth = size.width;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: <Widget>[
-          menu(context),
-          dashboard(context),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'My Trips',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Browse Trips',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.car_rental),
+            label: 'Get a cab',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      appBar: AppBar(
+        title: Text('Student Dashboard'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              icon: Icon(Icons.exit_to_app))
         ],
       ),
-    );
-  }
-
-  Widget menu(context) {
-    return SlideTransition(
-      position: _slideAnimation,
-      child: ScaleTransition(
-        scale: _menuScaleAnimation,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("Dashboard",
-                    style: TextStyle(color: Colors.black, fontSize: 22)),
-                SizedBox(height: 10),
-                Text("Messages",
-                    style: TextStyle(color: Colors.black, fontSize: 22)),
-                SizedBox(height: 10),
-                Text("Utility Bills",
-                    style: TextStyle(color: Colors.black, fontSize: 22)),
-                SizedBox(height: 10),
-                Text("Funds Transfer",
-                    style: TextStyle(color: Colors.black, fontSize: 22)),
-                SizedBox(height: 10),
-                Text("Branches",
-                    style: TextStyle(color: Colors.black, fontSize: 22)),
-              ],
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: backgroundColor,
+      body: getBody(context),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return request_partner(widget.account);
+                },
+              ),
+            );
+          },
+          child: Icon(Icons.add_rounded)),
     );
   }
 
   Widget dashboard(context) {
-    return AnimatedPositioned(
-      duration: duration,
-      top: 0,
-      bottom: 0,
-      left: isCollapsed ? 0 : 0.1 * screenWidth,
-      right: isCollapsed ? 0 : -0.5 * screenWidth,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Material(
-          animationDuration: duration,
-          borderRadius: BorderRadius.all(Radius.circular(40)),
-          elevation: 8,
-          color: backgroundColor,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            physics: ClampingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 48),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      InkWell(
-                        child: Text("log out"),
-                        onTap:  () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Register();
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                      Text("My Trips",
-                          style: TextStyle(fontSize: 24, color: Colors.black)),
-                      Icon(Icons.settings, color: Colors.black),
-                    ],
-                  ),
-                  // SizedBox(height: 20),
-                  Container(
-                    height: 30,
-                    child: PageView(
-                      controller: PageController(viewportFraction: 0.3),
-                      scrollDirection: Axis.horizontal,
-                      pageSnapping: true,
-                      children: <Widget>[
-                        Container(
-                          width: 40,
-                          child: Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(2),
-                                child: RaisedButton(
-                                  child: Text("Request a partner"),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return request_partner(
-                                              widget.account);
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),SizedBox(width: 20,),
-                              Container(
-                                margin: EdgeInsets.all(2),
-                                child: RaisedButton(
-                                  child: Text("Browse Trips"),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return search(widget.account);
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),SizedBox(width: 20,),
-                              Container(
-                                margin: EdgeInsets.all(2),
-                                child: RaisedButton(
-                                  child: Text("Find a cab"),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return search(widget.account);
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-
-                  ListView.separated(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: InkWell(
-                            splashColor: Colors.blue.withAlpha(30),
-                            onTap: () {
-                              _showMyDialog(widget.account.trips[index]);
-                            },
-                            child: Container(
-                              width: 300,
-                              height: 100,
-                              child: ListTile(
-                                title: Text(widget
-                                    .account.trips[index].leave_by_earliest),
-                                subtitle: Text(widget
-                                        .account.trips[index].location +
-                                    ' to ' +
-                                    widget.account.trips[index].destination),
-                                trailing:
-                                    Text(widget.account.trips[index].status),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return Divider(height: 16);
-                      },
-                      itemCount: widget.account.trips.length)
-                ],
-              ),
+    return GridView.builder(
+      padding: EdgeInsets.all(20),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200,
+            childAspectRatio: 3 / 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20),
+        itemCount: widget.account.trips.length,
+        itemBuilder: (BuildContext ctx, index) {
+          return Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: widget.account.trips[index].status == 'pending'
+                    ? Colors.amber
+                    : Colors.green,
+                borderRadius: BorderRadius.circular(15)),
+            child: ListTile(
+              onTap: () {
+                _showMyDialog(widget.account.trips[index]);
+              },
+              subtitle: Text(widget.account.trips[index].leave_by_earliest),
+              title: Text(widget.account.trips[index].location +
+                  ' to ' +
+                  widget.account.trips[index].destination),
+              // trailing: Text(widget.account.trips[index].status),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }
