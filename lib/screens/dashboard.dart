@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_page/screens/Globals.dart';
 import 'package:login_page/screens/Globals.dart' as Globals;
+import 'package:login_page/screens/cabResults.dart';
 import 'package:login_page/screens/request_partner.dart';
 import 'package:login_page/screens/search.dart';
 
@@ -24,6 +26,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   bool isCollapsed = true;
   double screenWidth, screenHeight;
   final Duration duration = const Duration(milliseconds: 300);
+  Future<List<CabSearchResult>> futureResult;
 
   @override
   void initState() {
@@ -57,26 +60,26 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
 
   // Account user=login.loginState.
   Future<void> _showMyDialog(Globals.Trip trip) async {
-    String leave_by_earliest, leave_by_latest;
-    var from = trip.location;
-    var to = trip.destination;
+    String leave_by_earliest=trip.leave_by_earliest, leave_by_latest=trip.leave_by_latest;
+    String from = trip.location;
+    String to = trip.destination;
 
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Trip details'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          DropdownButton<String>(
+        return StatefulBuilder(builder: (context, setState){
+          return AlertDialog(
+            title: Text('Trip details'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[ DropdownButton<String>(
                             value: from,
                             // icon: Icon(Icons.person),
                             style: TextStyle(color: Colors.black),
@@ -101,131 +104,147 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                               );
                             }).toList(),
                           ),
-                          DropdownButton<String>(
-                            value: to,
-                            // icon: Icon(Icons.person),
-                            style: TextStyle(color: Colors.black),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.grey,
-                            ),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                to = newValue;
-                              });
-                            },
-                            items: <String>[
-                              'Campus',
-                              'Airport',
-                              'Kacheguda',
-                              'Secunderabad',
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
-                          DateTimePicker(
-                            type: DateTimePickerType.dateTimeSeparate,
-                            dateMask: 'd MMM, yyyy',
-                            initialValue: trip.leave_by_earliest,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                            icon: Icon(Icons.event),
-                            dateLabelText: 'Date',
-                            timeLabelText: 'Hour',
-                            onChanged: (val) {
-                              print(val);
-                              leave_by_earliest = val.toString();
-                            },
-                            validator: (val) {
-                              print(val);
-                              return null;
-                            },
-                            onSaved: (val) => {
-                              leave_by_earliest = val.toString()
-                              // print(val);
-                            },
-                          ),
-                          DateTimePicker(
-                            type: DateTimePickerType.dateTimeSeparate,
-                            dateMask: 'dd MMM ,yyyy',
-                            initialValue: trip.leave_by_latest,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                            icon: Icon(Icons.event),
-                            dateLabelText: 'Date',
-                            timeLabelText: 'Hour',
-                            onChanged: (val) {
-                              print(val);
-                              leave_by_latest = val.toString();
-                            },
-                            validator: (val) {
-                              print(val);
 
-                              return null;
-                            },
-                            onSaved: (val) => leave_by_latest = val.toString(),
-                          ),
-                        ],
-                      ),
-                    ],
+                            DropdownButton<String>(
+                              value: to,
+                              // icon: Icon(Icons.person),
+                              style: TextStyle(color: Colors.black),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.grey,
+                              ),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  to = newValue;
+                                });
+                              },
+                              items: <String>[
+                                'Campus',
+                                'Airport',
+                                'Kacheguda',
+                                'Secunderabad',
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                            DateTimePicker(
+                              type: DateTimePickerType.dateTimeSeparate,
+                              dateMask: 'd MMM, yyyy',
+                              initialValue: trip.leave_by_earliest,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                              icon: Icon(Icons.event),
+                              dateLabelText: 'Date',
+                              timeLabelText: 'Hour',
+                              onChanged: (val) {
+                                print(val);
+                                leave_by_earliest = val.toString();
+                              },
+                              validator: (val) {
+                                print(val);
+                                return null;
+                              },
+                              onSaved: (val) => {
+                                leave_by_earliest = val.toString()
+                                // print(val);
+                              },
+                            ),
+                            DateTimePicker(
+                              type: DateTimePickerType.dateTimeSeparate,
+                              dateMask: 'dd MMM ,yyyy',
+                              initialValue: trip.leave_by_latest,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                              icon: Icon(Icons.event),
+                              dateLabelText: 'Date',
+                              timeLabelText: 'Hour',
+                              onChanged: (val) {
+                                print(val);
+                                leave_by_latest = val.toString();
+                              },
+                              validator: (val) {
+                                print(val);
+
+                                return null;
+                              },
+                              onSaved: (val) => leave_by_latest = val.toString(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                update(widget.account.user.s_id, trip.tripid, from, to,
-                    leave_by_earliest, leave_by_latest);
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) {
-                  return MenuDashboardPage(Globals.Account.currentAccount);
-                }), (route) => route.isFirst);
-              },
-              child: Text('Update'),
-            ),
-            TextButton(
-              onPressed: () {
-                deleteTrip(trip.tripid);
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) {
-                      return MenuDashboardPage(Globals.Account.currentAccount);
-                    }), (route) => route.isFirst);
-              },
-              child: Text('delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Mark as finished'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('find cabs'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('cancel'),
-            ),
-          ],
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  update(widget.account.user.s_id, trip.tripid, from, to,
+                      leave_by_earliest, leave_by_latest);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) {
+                        return MenuDashboardPage(Globals.Account.currentAccount);
+                      }), (route) => route.isFirst);
+                },
+                child: Text('Update'),
+              ),
+              TextButton(
+                onPressed: () {
+                  deleteTrip(trip.tripid);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) {
+                        return MenuDashboardPage(Globals.Account.currentAccount);
+                      }), (route) => route.isFirst);
+                },
+                child: Text('delete'),
+              ),
+              TextButton(
+                onPressed: () {
+                  status(trip.tripid);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) {
+                        return MenuDashboardPage(Globals.Account.currentAccount);
+                      }), (route) => route.isFirst);
+
+                },
+                child: Text('Mark as finished'),
+              ),
+              TextButton(
+                onPressed: () {
+
+                  pickup( from,leave_by_earliest, leave_by_latest).then((value) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) {
+                          return   ResultsPage(value,trip.tripid);
+                        }), (route) => route.isFirst);
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Text('find cabs'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('cancel'),
+              ),
+            ],
+          );
+        }
         );
-      },
+      }
+      ,
     );
   }
 
-  Future<List<Globals.CabSearchResult>> pickup(String car_no, String location,
-      String startTime, String endTime, String trip_id) async {
+  Future<List<Globals.CabSearchResult>> pickup( String location,
+      String startTime, String endTime) async {
     final response = await http.post(
-      Uri.http('127.0.0.1:5000', 'pickup'),
+      Uri.http('127.0.0.1:5000', 'findCar'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
@@ -243,10 +262,10 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
         CabSearchResults.add(Globals.CabSearchResult(
             result[i]['driver_name'],
             result[i]['driver_no'],
-            result[i]['car_capacity'],
+            result[i]['car_capacity'].toString(),
             result[i]['model'],
             result[i]['car_no'],
-            trip_id));
+            ));
       }
       return CabSearchResults;
     } else {
@@ -281,6 +300,23 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   Future<bool> deleteTrip(String trip_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'delete'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(<String, String>{
+        'trip_id': trip_id,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to create album.');
+    }
+  }
+  Future<bool> status(String trip_id) async {
+    final response = await http.post(
+      Uri.http('127.0.0.1:5000', 'status'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },

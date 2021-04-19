@@ -48,8 +48,8 @@ class SearchResult
 }
 class CabSearchResult
 {
-  String car_no, driverName,driverPhone, carCapacity, carModel,trip_id;
-  CabSearchResult(this.driverName,this.driverPhone,this.carCapacity,this.carModel,this.car_no,this.trip_id);
+  String car_no, driverName,driverPhone, carCapacity, carModel;
+  CabSearchResult(this.driverName,this.driverPhone,this.carCapacity,this.carModel,this.car_no);
 
 
 }
