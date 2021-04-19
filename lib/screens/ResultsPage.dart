@@ -25,38 +25,61 @@ class _ResultsPageState extends State<ResultsPage> with SingleTickerProviderStat
       backgroundColor: backgroundColor,
       body: Column(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.all(20),
-            child:  Text("date:12/04/2021   time:1600-1630"),
-          ),
+          GridView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              padding: EdgeInsets.all(20),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  childAspectRatio: 3 / 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20),
+              itemCount: widget.searchResults.length,
+              itemBuilder: (BuildContext ctx, index) {
+                return Container(
+                  height: 50,
+                  width: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: ListTile(
 
-          Expanded(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount:widget.searchResults.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: 100,
-                      // color: Colors.amber[colorCodes[index]],
-                      child:Card(
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          onTap: (){},
-                          child: Container(
-                            width: 300,
-                            height: 100,
-
-                              child: Text(widget.searchResults[index].leave_by_earliest+ ' '+ widget.searchResults[index].leave_by_latest+' '+widget.searchResults[index].phone_no+''+widget.searchResults[index].name+widget.searchResults[index].gender,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-
-                          ),
-                        ),
-                      ),
-                    );
-                  })
-          )
+                    title: Text("Name: "+widget.searchResults[index].name.toUpperCase()),
+                    subtitle: Text( "Phone: "+widget.searchResults[index].phone_no+
+                        "\n" +
+                       "Room #: "+ widget.searchResults[index].room_no+'\n'+"leaving between: "+widget.searchResults[index].leave_by_earliest+"\nand\n"+widget.searchResults[index].leave_by_latest),
+                    // trailing: Text(widget.account.trips[index].status),
+                  ),
+                );
+              })
+          // Expanded(
+          //     child: ListView.builder(
+          //         scrollDirection: Axis.vertical,
+          //         shrinkWrap: true,
+          //         padding: const EdgeInsets.all(8),
+          //         itemCount:widget.searchResults.length,
+          //         itemBuilder: (BuildContext context, int index) {
+          //           return Container(
+          //             height: 100,
+          //             // color: Colors.amber[colorCodes[index]],
+          //             child:Card(
+          //               child: InkWell(
+          //                 splashColor: Colors.blue.withAlpha(30),
+          //                 onTap: (){},
+          //                 child: Container(
+          //                   width: 300,
+          //                   height: 100,
+          //
+          //                     child: Text(widget.searchResults[index].leave_by_earliest+ ' '+ widget.searchResults[index].leave_by_latest+' '+widget.searchResults[index].phone_no+''++widget.searchResults[index].gender,
+          //                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          //
+          //                 ),
+          //               ),
+          //             ),
+          //           );
+          //         })
+          // )
         ],
       ),
     );

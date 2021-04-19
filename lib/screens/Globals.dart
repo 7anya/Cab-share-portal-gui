@@ -23,7 +23,8 @@ class Trip
   String leave_by_latest;
   String location,destination;
   String status;
-  Trip(this.leave_by_earliest, this.leave_by_latest, this.location, this.destination, this.status);
+  String tripid;
+  Trip(this.leave_by_earliest, this.leave_by_latest, this.location, this.destination, this.status,this.tripid);
 
 }
 

@@ -187,7 +187,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   }
 
   Future<List<Globals.CabSearchResult>> pickup(
-      String car_no, String location, String startTime, String endTime) async {
+      String car_no, String location, String startTime, String endTime,String trip_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'pickup'),
       headers: <String, String>{
@@ -205,19 +205,60 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
       List<Globals.CabSearchResult> CabSearchResults = [];
       for (int i = 0; i < result.length; i++) {
         CabSearchResults.add(Globals.CabSearchResult(
-            result[i][''],
-            result[i][''],
-            result[i][''],
-            result[i][''],
-            result[i][''],
-            result[i]['']));
+            result[i]['driver_name'],
+            result[i]['driver_no'],
+            result[i]['car_capacity'],
+            result[i]['model'],
+            result[i]['car_no'],
+            trip_id)
+            );
       }
       return CabSearchResults;
     } else {
       throw Exception('Failed to create album.');
     }
   }
+  Future<bool> update(String s_id,String trip_id, String from, String to, String leave_by_earliest,String leave_by_latest) async {
+    final response = await http.post(
+      Uri.http('127.0.0.1:5000', 'update'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(<String, String>{
+        'trip_id':trip_id,
+        's_id': s_id,
+        'source': from,
+        'destination': to,
+        'leave_by_earliest': leave_by_earliest,
+        'leave_by_latest': leave_by_latest
+      }),
+    );
 
+    if (response.statusCode == 200) {
+
+      return true;
+    } else {
+      throw Exception('Failed to create album.');
+    }
+  }
+  Future<bool> deleteTrip(String trip_id) async {
+    final response = await http.post(
+      Uri.http('127.0.0.1:5000', 'delete'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(<String, String>{
+        'trip_id': trip_id,
+
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to create album.');
+    }
+  }
   var _selectedIndex = 0;
 
   Widget getBody(BuildContext context) {
