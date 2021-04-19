@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:date_time_picker/date_time_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:login_page/screens/Globals.dart' as Globals;
 
 import 'dashboard.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:date_time_picker/date_time_picker.dart';
 
 class request_partner extends StatefulWidget {
   request_partner(this.account);
@@ -71,11 +72,11 @@ class _request_partnerState extends State<request_partner> {
                     child: Center(
                       child: Column(
                         children: [
-                          Text("Enter your trip details here"),
+                          Text('Enter your trip details here'),
                           // Row(
                           //   children: [
 
-                          Text("From"),
+                          Text('From'),
                           Container(
                             margin: const EdgeInsets.only(left: 40, right: 2.0),
                             width: MediaQuery.of(context).size.width / 6,
@@ -105,7 +106,7 @@ class _request_partnerState extends State<request_partner> {
                               }).toList(),
                             ),
                           ),
-                          Text("To"),
+                          Text('To'),
                           Container(
                             margin: const EdgeInsets.only(left: 40, right: 2.0),
                             width: MediaQuery.of(context).size.width / 6,
@@ -146,7 +147,7 @@ class _request_partnerState extends State<request_partner> {
                             lastDate: DateTime(2100),
                             icon: Icon(Icons.event),
                             dateLabelText: 'Date',
-                            timeLabelText: "Hour",
+                            timeLabelText: 'Hour',
                             onChanged: (val) {
                               print(val);
                               leave_by_earliest = val.toString();
@@ -168,7 +169,7 @@ class _request_partnerState extends State<request_partner> {
                             lastDate: DateTime(2100),
                             icon: Icon(Icons.event),
                             dateLabelText: 'Date',
-                            timeLabelText: "Hour",
+                            timeLabelText: 'Hour',
                             onChanged: (val) {
                               print(val);
                               leave_by_latest = val.toString();
@@ -185,28 +186,27 @@ class _request_partnerState extends State<request_partner> {
                                 if (leave_by_latest
                                         .compareTo(leave_by_earliest) ==
                                     1) {
-                                  print('success');
-                                  setState(() {
-                                    _futureAlbum = createTrip(
-                                        widget.account.user.s_id,
-                                        from,
-                                        to,
-                                        leave_by_earliest,
-                                        leave_by_latest);
+                                  createTrip(widget.account.user.s_id, from, to,
+                                          leave_by_earliest, leave_by_latest)
+                                      .then((value) {
+                                    //TODO Fetch this from backend to get trip add
                                     widget.account.trips.add(Globals.Trip(
                                         leave_by_earliest,
                                         leave_by_latest,
                                         from,
                                         to,
-                                        "pending",'1231'));
+                                        'pending',
+                                        '1231'));
+
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(builder: (context) {
+                                      return MenuDashboardPage(
+                                          Globals.Account.currentAccount);
+                                    }), (route) => route.isFirst);
                                   });
-                                } else
-                                  print("loginnn" +
-                                      username.text +
-                                      " " +
-                                      password.text);
+                                }
                               },
-                              child: Text("Submit")),
+                              child: Text('Submit')),
                           SizedBox(
                             height: 20,
                           ),
@@ -220,7 +220,7 @@ class _request_partnerState extends State<request_partner> {
                                   ),
                                 );
                               },
-                              child: Text("Return to dashboard"))
+                              child: Text('Return to dashboard'))
                         ],
                       ),
                     )))
@@ -231,7 +231,7 @@ class _request_partnerState extends State<request_partner> {
                   if (snapshot.hasData) {
                     return MaterialApp(home: MenuDashboardPage(widget.account));
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return Text('${snapshot.error}');
                   }
 
                   return CircularProgressIndicator();

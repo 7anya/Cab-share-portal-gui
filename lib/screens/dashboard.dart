@@ -25,14 +25,41 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   double screenWidth, screenHeight;
   final Duration duration = const Duration(milliseconds: 300);
 
+  @override
+  void initState() {
+    super.initState();
+    getMyTrips().then((value) {
+      setState(() {});
+    });
+  }
+
+  Future<bool> getMyTrips() async {
+    widget.account.trips.clear();
+    final trips = await http.post(
+      Uri.http('127.0.0.1:5000', 'trip_history'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(<String, String>{'s_id': widget.account.user.s_id}),
+    );
+    List<dynamic> trips_result = jsonDecode(trips.body);
+    for (var i = 0; i < trips_result.length; i++) {
+      widget.account.trips.add(Globals.Trip(
+          trips_result[i]['leave_by_earliest'].toString(),
+          trips_result[i]['leave_by_latest'].toString(),
+          trips_result[i]['location'].toString(),
+          trips_result[i]['destination'].toString(),
+          trips_result[i]['status'].toString(),
+          trips_result[i]['trip_id'].toString()));
+    }
+    return true;
+  }
+
   // Account user=login.loginState.
   Future<void> _showMyDialog(Globals.Trip trip) async {
-    TextEditingController source = TextEditingController();
-    TextEditingController destination = TextEditingController();
-    source.text = trip.location;
     String leave_by_earliest, leave_by_latest;
-    String from = trip.location;
-    String to = trip.destination;
+    var from = trip.location;
+    var to = trip.destination;
 
     return showDialog<void>(
       context: context,
@@ -84,7 +111,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                             ),
                             onChanged: (String newValue) {
                               setState(() {
-                                from = newValue;
+                                to = newValue;
                               });
                             },
                             items: <String>[
@@ -107,7 +134,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                             lastDate: DateTime(2100),
                             icon: Icon(Icons.event),
                             dateLabelText: 'Date',
-                            timeLabelText: "Hour",
+                            timeLabelText: 'Hour',
                             onChanged: (val) {
                               print(val);
                               leave_by_earliest = val.toString();
@@ -129,7 +156,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                             lastDate: DateTime(2100),
                             icon: Icon(Icons.event),
                             dateLabelText: 'Date',
-                            timeLabelText: "Hour",
+                            timeLabelText: 'Hour',
                             onChanged: (val) {
                               print(val);
                               leave_by_latest = val.toString();
@@ -151,34 +178,43 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
           ),
           actions: <Widget>[
             TextButton(
+              onPressed: () {
+                update(widget.account.user.s_id, trip.tripid, from, to,
+                    leave_by_earliest, leave_by_latest);
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) {
+                  return MenuDashboardPage(Globals.Account.currentAccount);
+                }), (route) => route.isFirst);
+              },
               child: Text('Update'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
             TextButton(
+              onPressed: () {
+                deleteTrip(trip.tripid);
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) {
+                      return MenuDashboardPage(Globals.Account.currentAccount);
+                    }), (route) => route.isFirst);
+              },
               child: Text('delete'),
+            ),
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-            ),
-            TextButton(
               child: Text('Mark as finished'),
+            ),
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-            ),
-            TextButton(
               child: Text('find cabs'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
             TextButton(
-              child: Text('cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: Text('cancel'),
             ),
           ],
         );
@@ -186,8 +222,8 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     );
   }
 
-  Future<List<Globals.CabSearchResult>> pickup(
-      String car_no, String location, String startTime, String endTime,String trip_id) async {
+  Future<List<Globals.CabSearchResult>> pickup(String car_no, String location,
+      String startTime, String endTime, String trip_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'pickup'),
       headers: <String, String>{
@@ -202,30 +238,31 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
 
     if (response.statusCode == 200) {
       List result = jsonDecode(response.body);
-      List<Globals.CabSearchResult> CabSearchResults = [];
-      for (int i = 0; i < result.length; i++) {
+      var CabSearchResults = <Globals.CabSearchResult>[];
+      for (var i = 0; i < result.length; i++) {
         CabSearchResults.add(Globals.CabSearchResult(
             result[i]['driver_name'],
             result[i]['driver_no'],
             result[i]['car_capacity'],
             result[i]['model'],
             result[i]['car_no'],
-            trip_id)
-            );
+            trip_id));
       }
       return CabSearchResults;
     } else {
       throw Exception('Failed to create album.');
     }
   }
-  Future<bool> update(String s_id,String trip_id, String from, String to, String leave_by_earliest,String leave_by_latest) async {
+
+  Future<bool> update(String s_id, String trip_id, String from, String to,
+      String leave_by_earliest, String leave_by_latest) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'update'),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
       body: json.encode(<String, String>{
-        'trip_id':trip_id,
+        'trip_id': trip_id,
         's_id': s_id,
         'source': from,
         'destination': to,
@@ -235,12 +272,12 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     );
 
     if (response.statusCode == 200) {
-
       return true;
     } else {
       throw Exception('Failed to create album.');
     }
   }
+
   Future<bool> deleteTrip(String trip_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'delete'),
@@ -249,7 +286,6 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
       },
       body: json.encode(<String, String>{
         'trip_id': trip_id,
-
       }),
     );
 
@@ -259,13 +295,19 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
       throw Exception('Failed to create album.');
     }
   }
+
   var _selectedIndex = 0;
 
   Widget getBody(BuildContext context) {
     switch (_selectedIndex) {
-      case 0: return dashboard(context);
-      case 1: return search(widget.account);
-      case 2: return Text('Not yet implemented!');
+      case 0:
+        return showTrips(context);
+      case 1:
+        return search(widget.account);
+      case 2:
+        return Text('Not yet implemented!');
+      default:
+        throw UnimplementedError();
     }
   }
 
@@ -327,9 +369,9 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     );
   }
 
-  Widget dashboard(context) {
+  Widget showTrips(context) {
     return GridView.builder(
-      padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 200,
             childAspectRatio: 3 / 2,

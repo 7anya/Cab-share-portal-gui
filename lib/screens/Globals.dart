@@ -32,6 +32,7 @@ class Account
 {
   Student user= Student();
   List <Trip> trips= [];
+  static Account currentAccount;
 
 }
 class SearchResult
