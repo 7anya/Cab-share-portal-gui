@@ -24,7 +24,8 @@ class _request_partnerState extends State<request_partner> {
   Future<bool> _futureAlbum;
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
-  String leave_by_earliest, leave_by_latest;
+  String leave_by_earliest = DateTime.now().toString().substring(0,16),
+      leave_by_latest = DateTime.now().toString().substring(0,16);
   String from = 'Campus';
   String to = 'Campus';
   Globals.Account account = new Globals.Account();
@@ -183,28 +184,34 @@ class _request_partnerState extends State<request_partner> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                if (leave_by_latest
-                                        .compareTo(leave_by_earliest) ==
-                                    1) {
-                                  createTrip(widget.account.user.s_id, from, to,
-                                          leave_by_earliest, leave_by_latest)
-                                      .then((value) {
-                                    //TODO Fetch this from backend to get trip add
-                                    widget.account.trips.add(Globals.Trip(
-                                        leave_by_earliest,
-                                        leave_by_latest,
-                                        from,
-                                        to,
-                                        'pending',
-                                        '1231'));
+                                leave_by_earliest.compareTo(leave_by_latest) !=
+                                            -1 ||
+                                        to == from
+                                    ? Globals.showError(context)
+                                    : createTrip(
+                                            widget.account.user.s_id,
+                                            from,
+                                            to,
+                                            leave_by_earliest,
+                                            leave_by_latest)
+                                        .then((value) {
+                                        //TODO Fetch this from backend to get trip add
+                                        widget.account.trips.add(Globals.Trip(
+                                            leave_by_earliest,
+                                            leave_by_latest,
+                                            from,
+                                            to,
+                                            'pending',
+                                            '1231'));
 
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(builder: (context) {
-                                      return MenuDashboardPage(
-                                          Globals.Account.currentAccount);
-                                    }), (route) => route.isFirst);
-                                  });
-                                }
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                          return MenuDashboardPage(
+                                              Globals.Account.currentAccount);
+                                        }), (route) => route.isFirst);
+                                      });
                               },
                               child: Text('Submit')),
                           SizedBox(

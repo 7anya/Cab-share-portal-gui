@@ -223,12 +223,16 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  update(widget.account.user.s_id, trip.tripid, from, to,
-                      leave_by_earliest, leave_by_latest);
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) {
-                    return MenuDashboardPage(Globals.Account.currentAccount);
-                  }), (route) => route.isFirst);
+                  if (leave_by_earliest.compareTo(leave_by_latest) != -1 || from==to)
+                    Globals.showError(context);
+                  else {
+                    update(widget.account.user.s_id, trip.tripid, from, to,
+                        leave_by_earliest, leave_by_latest);
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) {
+                      return MenuDashboardPage(Globals.Account.currentAccount);
+                    }), (route) => route.isFirst);
+                  }
                 },
                 child: Text('Update'),
               ),
@@ -258,7 +262,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                       .then((value) {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) {
-                      return ResultsPage(value, trip.tripid,widget.account);
+                      return ResultsPage(value, trip.tripid, widget.account);
                     }), (route) => route.isFirst);
                   });
                   Navigator.of(context).pop();

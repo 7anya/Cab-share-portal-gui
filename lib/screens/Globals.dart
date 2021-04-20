@@ -60,6 +60,7 @@ class CabSearchResult
 
 bool checkID(String id_no)
 {
+  // return RegExp('\b201.[AB][1-7][PT]')
   return  RegExp(r'^[2][0]([1][56789]|[2][0])([A][1234578A]|[B][12345])([A][1234578A]|[B][12345]|[P][S]|[T][S])[0-9]{4}[PGH]').hasMatch(id_no);
 }
   bool checkCarno(String car_no)

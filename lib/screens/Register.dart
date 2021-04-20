@@ -159,7 +159,7 @@ class _RegisterState extends State<Register> {
       'Email': email,
       'Mobile': phone,
       'Room Number': room,
-      'Set a password': password,
+      'Set a Password': password,
       'Retype Password': re_password
     };
 
@@ -182,12 +182,14 @@ class _RegisterState extends State<Register> {
                 width: MediaQuery.of(context).size.width / 3.7,
                 color: Colors.blue[50],
                 child: TextField(
+                  obscureText: field.key.toString().contains("Password")?true:false,
                   controller: field.value,
                   style: TextStyle(
                     fontSize: 15.0,
                   ),
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(10.0),
+
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.blue[50],

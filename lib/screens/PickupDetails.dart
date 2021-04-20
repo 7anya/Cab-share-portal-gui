@@ -94,7 +94,7 @@ class _pickupDetailsState extends State<pickupDetails> {
                 padding: const EdgeInsets.all(0.0),
                 child: Column(
                   children: [
-
+                  Text("location"),
                     Container(
                       margin: const EdgeInsets.only(left: 40, right: 2.0),
                       width: MediaQuery.of(context).size.width / 6,

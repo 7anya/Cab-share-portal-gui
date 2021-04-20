@@ -24,7 +24,7 @@ class _searchState extends State<search> {
   Future<bool> _futureAlbum;
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
-  String leave_by_earliest, leave_by_latest;
+  String leave_by_earliest= DateTime.now().toString().substring(0,16), leave_by_latest= DateTime.now().toString().substring(0,16);
   String from = 'Campus';
   String to = 'Campus';
   List<Globals.SearchResult> searchResults = [];
@@ -149,7 +149,7 @@ class _searchState extends State<search> {
                               }).toList(),
                             ),
                           ),
-
+                          Text("Leaving Between"),
                           //   ],
                           // ),
                           DateTimePicker(
@@ -174,6 +174,7 @@ class _searchState extends State<search> {
                               // print(val);
                             },
                           ),
+                          Text("and"),
                           DateTimePicker(
                             type: DateTimePickerType.dateTimeSeparate,
                             dateMask: 'dd MMM ,yyyy',
@@ -194,16 +195,12 @@ class _searchState extends State<search> {
                             },
                             onSaved: (val) => leave_by_latest = val.toString(),
                           ),
+                          SizedBox(height: 20,),
                           ElevatedButton(
                               onPressed: () {
-                                leave_by_latest.compareTo(leave_by_earliest) ==
-                                        1
-                                    ? print("success")
-                                    : print("loginnn" +
-                                        username.text +
-                                        " " +
-                                        password.text);
-                                setState(() {
+                                leave_by_earliest.compareTo(leave_by_latest) !=-1 || to==from
+                                    ? Globals.showError(context)
+                                    : setState(() {
                                   _futureAlbum = findTrips(
                                       widget.account.user.s_id,
                                       from,
