@@ -58,17 +58,12 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     return true;
   }
 
-  // Account user=login.loginState.
-  Future<void> _showMyDialog(Globals.Trip trip) async {
-    String leave_by_earliest=trip.leave_by_earliest, leave_by_latest=trip.leave_by_latest;
-    String from = trip.location;
-    String to = trip.destination;
-
+  Future<void> _showError() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState){
+        return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             title: Text('Trip details'),
             content: SingleChildScrollView(
@@ -79,32 +74,76 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Column(
-                          children: <Widget>[ DropdownButton<String>(
-                            value: from,
-                            // icon: Icon(Icons.person),
-                            style: TextStyle(color: Colors.black),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.grey,
-                            ),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                from = newValue;
-                              });
-                            },
-                            items: <String>[
-                              'Campus',
-                              'Airport',
-                              'Kacheguda',
-                              'Secunderabad',
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
+                          children: <Widget>[Text("Error: invalid entry")],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('ok'),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
 
+  // Account user=login.loginState.
+  Future<void> _showMyDialog(Globals.Trip trip) async {
+    String leave_by_earliest = trip.leave_by_earliest,
+        leave_by_latest = trip.leave_by_latest;
+    String from = trip.location;
+    String to = trip.destination;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Trip details'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[
+                            DropdownButton<String>(
+                              value: from,
+                              // icon: Icon(Icons.person),
+                              style: TextStyle(color: Colors.black),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.grey,
+                              ),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  from = newValue;
+                                });
+                              },
+                              items: <String>[
+                                'Campus',
+                                'Airport',
+                                'Kacheguda',
+                                'Secunderabad',
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
                             DropdownButton<String>(
                               value: to,
                               // icon: Icon(Icons.person),
@@ -170,7 +209,8 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
 
                                 return null;
                               },
-                              onSaved: (val) => leave_by_latest = val.toString(),
+                              onSaved: (val) =>
+                                  leave_by_latest = val.toString(),
                             ),
                           ],
                         ),
@@ -187,8 +227,8 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                       leave_by_earliest, leave_by_latest);
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) {
-                        return MenuDashboardPage(Globals.Account.currentAccount);
-                      }), (route) => route.isFirst);
+                    return MenuDashboardPage(Globals.Account.currentAccount);
+                  }), (route) => route.isFirst);
                 },
                 child: Text('Update'),
               ),
@@ -197,34 +237,33 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
                   deleteTrip(trip.tripid);
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) {
-                        return MenuDashboardPage(Globals.Account.currentAccount);
-                      }), (route) => route.isFirst);
+                    return MenuDashboardPage(Globals.Account.currentAccount);
+                  }), (route) => route.isFirst);
                 },
-                child: Text('delete'),
+                child: Text('Delete'),
               ),
               TextButton(
                 onPressed: () {
                   status(trip.tripid);
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) {
-                        return MenuDashboardPage(Globals.Account.currentAccount);
-                      }), (route) => route.isFirst);
-
+                    return MenuDashboardPage(Globals.Account.currentAccount);
+                  }), (route) => route.isFirst);
                 },
                 child: Text('Mark as finished'),
               ),
               TextButton(
                 onPressed: () {
-
-                  pickup( from,leave_by_earliest, leave_by_latest).then((value) {
+                  pickup(from, leave_by_earliest, leave_by_latest)
+                      .then((value) {
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) {
-                          return   ResultsPage(value,trip.tripid);
-                        }), (route) => route.isFirst);
+                      return ResultsPage(value, trip.tripid,widget.account);
+                    }), (route) => route.isFirst);
                   });
                   Navigator.of(context).pop();
                 },
-                child: Text('find cabs'),
+                child: Text('Find cabs'),
               ),
               TextButton(
                 onPressed: () {
@@ -234,15 +273,13 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
               ),
             ],
           );
-        }
-        );
-      }
-      ,
+        });
+      },
     );
   }
 
-  Future<List<Globals.CabSearchResult>> pickup( String location,
-      String startTime, String endTime) async {
+  Future<List<Globals.CabSearchResult>> pickup(
+      String location, String startTime, String endTime) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'findCar'),
       headers: <String, String>{
@@ -260,12 +297,12 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
       var CabSearchResults = <Globals.CabSearchResult>[];
       for (var i = 0; i < result.length; i++) {
         CabSearchResults.add(Globals.CabSearchResult(
-            result[i]['driver_name'],
-            result[i]['driver_no'],
-            result[i]['car_capacity'].toString(),
-            result[i]['model'],
-            result[i]['car_no'],
-            ));
+          result[i]['driver_name'],
+          result[i]['driver_no'],
+          result[i]['car_capacity'].toString(),
+          result[i]['model'],
+          result[i]['car_no'],
+        ));
       }
       return CabSearchResults;
     } else {
@@ -314,6 +351,7 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
       throw Exception('Failed to create album.');
     }
   }
+
   Future<bool> status(String trip_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'status'),
@@ -370,10 +408,10 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
             icon: Icon(Icons.search),
             label: 'Browse Trips',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental),
-            label: 'Get a cab',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.car_rental),
+          //   label: 'Get a cab',
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],

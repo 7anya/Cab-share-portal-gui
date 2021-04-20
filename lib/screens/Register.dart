@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_page/screens/login.dart';
-
+import 'Globals.dart' as Globals;
 import 'login.dart';
 
 class Register extends StatefulWidget {
@@ -26,7 +26,43 @@ class _RegisterState extends State<Register> {
   final TextEditingController password = TextEditingController();
   final TextEditingController re_password = TextEditingController();
   Future<bool> _futureAlbum;
-
+  Future<void> _showError() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Trip details'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[Text("Error: invalid entry")],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('ok'),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
   Future<bool> createAlbum() async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'CreateStudent'),
@@ -204,8 +240,8 @@ class _RegisterState extends State<Register> {
                                           re_password.text != password.text ||
                                           email.text.isEmpty ||
                                           phone.text.isEmpty ||
-                                          gender.text.isEmpty
-                                      ? null
+                                          gender.text.isEmpty || !Globals.gender(gender.text) || !Globals.email(email.text) || !Globals.checkString(name.text) || !Globals.checkID(id.text)
+                                      ? Globals.showError(context)
                                       : {
                                           // ignore: unrelated_type_equality_checks
                                           setState(() {

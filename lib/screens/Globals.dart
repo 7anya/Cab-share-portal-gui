@@ -1,3 +1,7 @@
+import 'dart:js';
+
+import 'package:flutter/material.dart';
+
 class Student {
   String s_id;
   String name;
@@ -53,3 +57,70 @@ class CabSearchResult
 
 
 }
+
+bool checkID(String id_no)
+{
+  return  RegExp(r'^[2][0]([1][56789]|[2][0])([A][1234578A]|[B][12345])([A][1234578A]|[B][12345]|[P][S]|[T][S])[0-9]{4}[PGH]').hasMatch(id_no);
+}
+  bool checkCarno(String car_no)
+  {
+    return  RegExp(r'^[A-Z]{2}[ -][0-9]{2}[ -][A-Z]{1,2}[ -][0-9]{4}$').hasMatch(car_no);
+  }
+  bool checkString(String name )
+  {
+    return  RegExp(r'^[a-zA-Z ]+$').hasMatch(name);
+  }
+  bool email(String email)
+  {
+   return  RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+  }
+  bool gender(String gen)
+  {
+    gen=gen.toLowerCase();
+    return gen=='female' || gen=='male' || gen=='non binary';
+  }
+  bool phone(String phone)
+  {
+    return  RegExp(r'^[1-9][0-9]{9}$').hasMatch(phone);
+  }
+  bool checknum(String number)
+  {
+    return RegExp(r'^[0-9]+$').hasMatch(number);
+  }
+  Future<void> showError(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[Text("Error: invalid entry")],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('ok'),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }

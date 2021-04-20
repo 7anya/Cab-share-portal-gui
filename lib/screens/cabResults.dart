@@ -3,10 +3,13 @@ import 'Globals.dart' as Globals;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'dashboard.dart';
+
 final Color backgroundColor = Colors.white;
 
 class ResultsPage extends StatefulWidget {
-  ResultsPage(this.searchResults, this.tripid);
+  ResultsPage(this.searchResults, this.tripid,this.account);
+  Globals.Account account;
 
   List<Globals.CabSearchResult> searchResults;
   String tripid;
@@ -41,6 +44,19 @@ class _ResultsPageState extends State<ResultsPage>
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Color(0xfff7c4dff),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MenuDashboardPage(widget.account);
+                      },
+                    ),
+                  );
+                },
+                icon: Icon(Icons.exit_to_app))
+          ],
           title: Row(
             children: [
               Text("Search Results "),
@@ -71,17 +87,17 @@ class _ResultsPageState extends State<ResultsPage>
                     onTap: () {
                       linkcab(widget.searchResults[index].car_no,widget.tripid);
                     },
-                    title: Text("Driver name:" +
+                    title: Text("Driver name: " +
                         widget.searchResults[index].driverName),
                     subtitle: Text("Phone: " +
                         widget.searchResults[index].driverPhone +
                         "\n" +
-                        "Car model" +
+                        "Car model: " +
                         widget.searchResults[index].carModel +
                         '\n' +
-                        "Car capacity" +
+                        "Car capacity: " +
                         widget.searchResults[index].carCapacity +
-                        "\nCar number:" +
+                        "\nCar number: " +
                         widget.searchResults[index].car_no),
                     // trailing: Text(widget.account.trips[index].status),
                   ),

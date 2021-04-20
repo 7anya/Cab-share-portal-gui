@@ -33,6 +33,9 @@ class _loginState extends State<login> {
     );
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
+      // List<dynamic> tenp=result;
+      if (result.toString()=='[]')
+        return false;
       account.user.s_id = result['s_id'];
       account.user.gender = result['gender'];
       account.user.name = result['name'];
@@ -42,6 +45,7 @@ class _loginState extends State<login> {
       Globals.Account.currentAccount = account;
       return true;
     } else {
+      Globals.showError(context);
       throw Exception('Failed to create album.');
     }
   }
@@ -84,8 +88,8 @@ class _loginState extends State<login> {
                               controller: username,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.person),
-                                hintText: 'Username',
-                                labelText: 'Username*',
+                                hintText: 'ID number',
+                                labelText: 'ID number*',
                               ),
                             )),
                         Padding(
@@ -119,14 +123,19 @@ class _loginState extends State<login> {
                                         loginStudent(
                                             username.text, password.text)
                                             .then((value) {
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (context) {
-                                                    return MenuDashboardPage(
-                                                        account);
-                                                  }), (route) => route.isFirst);
+                                              if(value)
+                                                {
+                                                  Navigator.of(context)
+                                                      .pushAndRemoveUntil(
+                                                      MaterialPageRoute(
+                                                          builder:
+                                                              (context) {
+                                                            return MenuDashboardPage(
+                                                                account);
+                                                          }), (route) => route.isFirst);
+                                                }
+                                              else Globals.showError(context);
+
                                         });
                                       },
                                       child: Text(

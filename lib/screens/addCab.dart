@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:login_page/screens/Globals.dart';
+import 'package:login_page/screens/Globals.dart' as Globals;
 import 'package:login_page/screens/PickupDetails.dart';
 
 import 'dashboard.dart';
@@ -28,7 +28,7 @@ class _add_cabState extends State<add_cab> {
   TextEditingController driverPhone = TextEditingController();
 
   Future<bool> createCab(String car_no, String driverName, String carModel,
-      String carCapacity, String driverPhone,String admin_id) async {
+      String carCapacity, String driverPhone, String admin_id) async {
     final response = await http.post(
       Uri.http('127.0.0.1:5000', 'car'),
       headers: <String, String>{
@@ -40,7 +40,7 @@ class _add_cabState extends State<add_cab> {
         'model': carModel,
         'car_capacity': carCapacity,
         'driver_name': driverName,
-        'driver_phone':driverPhone,
+        'driver_phone': driverPhone,
       }),
     );
 
@@ -60,7 +60,14 @@ class _add_cabState extends State<add_cab> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Find a travel partner'),
+          title: Text('Enter cab details'),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                icon: Icon(Icons.exit_to_app))
+          ],
         ),
         body: (_futureAlbum == null)
             ? Center(
@@ -236,9 +243,24 @@ class _add_cabState extends State<add_cab> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                setState(() {
-                                  _futureAlbum = createCab(car_no.text,driverName.text,carModel.text,carCapacity.text,driverPhone.text,widget.admin_id);
-                                });
+                                car_no.text.isEmpty ||
+                                        driverPhone.text.isEmpty ||
+                                        carModel.text.isEmpty ||
+                                        car_no.text.isEmpty ||
+                                        carCapacity.text.isEmpty ||
+                                        !Globals.checkString(driverName.text) ||
+                                        !Globals.checkCarno(car_no.text) ||
+                                        !Globals.checknum(carCapacity.text)
+                                    ? Globals.showError(context)
+                                    : setState(() {
+                                        _futureAlbum = createCab(
+                                            car_no.text,
+                                            driverName.text,
+                                            carModel.text,
+                                            carCapacity.text,
+                                            driverPhone.text,
+                                            widget.admin_id);
+                                      });
                               },
                               child: Text("Next"))
                         ],
@@ -247,7 +269,7 @@ class _add_cabState extends State<add_cab> {
             : FutureBuilder<bool>(
                 future: _futureAlbum,
                 builder: (context, snapshot) {
-                  return pickupDetails(car_no.text);
+                  return pickupDetails(car_no.text, widget.admin_id);
                   if (snapshot.hasData) {
                     return Text("snapshot.data.title");
                   } else if (snapshot.hasError) {

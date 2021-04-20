@@ -43,12 +43,12 @@ class _ResultsPageState extends State<ResultsPage> with SingleTickerProviderStat
                   decoration: BoxDecoration(
                       color: Colors.amber,
                       borderRadius: BorderRadius.circular(5)),
-                  child: ListTile(
+                  child:ListTile(
 
                     title: Text("Name: "+widget.searchResults[index].name.toUpperCase()),
                     subtitle: Text( "Phone: "+widget.searchResults[index].phone_no+
                         "\n" +
-                       "Room #: "+ widget.searchResults[index].room_no+'\n'+"leaving between: "+widget.searchResults[index].leave_by_earliest+"\nand\n"+widget.searchResults[index].leave_by_latest),
+                       "Room #: "+ widget.searchResults[index].room_no+'\n'+"Leaving between: "+widget.searchResults[index].leave_by_earliest+" and\n"+widget.searchResults[index].leave_by_latest+"\n"+widget.searchResults[index].gender),
                     // trailing: Text(widget.account.trips[index].status),
                   ),
                 );

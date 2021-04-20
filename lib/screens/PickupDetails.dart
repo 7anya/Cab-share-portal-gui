@@ -11,11 +11,11 @@ import 'Globals.dart' as Globals;
 import 'dashboard.dart';
 import 'package:flutter/material.dart';
 import 'Globals.dart' as Globals;
-
+import 'addCab.dart';
 class pickupDetails extends StatefulWidget {
-  pickupDetails(this.car_no);
+  pickupDetails(this.car_no,this.admin_id);
 
-  String car_no;
+  String car_no;String admin_id;
 
   @override
   _pickupDetailsState createState() {
@@ -85,17 +85,16 @@ class _pickupDetailsState extends State<pickupDetails> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Pick up details of cab'),
+          title: Text('Details of availablity'),
         ),
-        body: (_futureAlbum == null)
-            ? Center(
+        body: Center(
                 child: Container(
                 height: 400,
                 width: 300,
                 padding: const EdgeInsets.all(0.0),
                 child: Column(
                   children: [
-                    Text('Login'),
+
                     Container(
                       margin: const EdgeInsets.only(left: 40, right: 2.0),
                       width: MediaQuery.of(context).size.width / 6,
@@ -128,6 +127,7 @@ class _pickupDetailsState extends State<pickupDetails> {
                     SizedBox(
                       height: 20,
                     ),
+                    Text("From"),
                     FlatButton(
                       onPressed: _selectStartTime,
                       child: Text(_startTime.toString()),
@@ -135,37 +135,81 @@ class _pickupDetailsState extends State<pickupDetails> {
                     SizedBox(
                       height: 20,
                     ),
+                    Text("To"),
                     FlatButton(
                       onPressed: _selectEndTime,
                       child: Text(_endTime.toString()),
                     ),
+                    SizedBox(height: 20,),
                     ElevatedButton(
                         onPressed: () {
+                          _startTime.toString().substring(10,15).compareTo(_endTime.toString().substring(10,15))!=-1?Globals.showError(context):
                           setState(() {
                             _futureAlbum = pickup(widget.car_no, location,
                                 _startTime.toString().substring(10, 15), _endTime.toString().substring(10, 15));
                             print(_futureAlbum);
+                            showadd(context);
                             // account.user.name = '_futureAlbum';
                           });
                         },
-                        child: Text('add'))
+                        child: Text('Add this pickup detail')),
+                    SizedBox(height: 20,),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return add_cab(widget.admin_id);
+                                },
+                              ),
+                            );
+                            // account.user.name = '_futureAlbum';
+                          });
+                        },
+                        child: Text('Add a new car'))
                   ],
                 ),
               ))
 
-            : FutureBuilder<bool>(
-                future: _futureAlbum,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text("eeeeeeee");
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-
-                  return CircularProgressIndicator();
-                },
-              ),
       ),
     );
   }
+}
+Future<void> showadd(context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[Text("Added")],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('ok'),
+            ),
+          ],
+        );
+      });
+    },
+  );
 }
