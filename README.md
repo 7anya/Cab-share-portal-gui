@@ -13,7 +13,7 @@
 - The application is easy to use, students register with their details
 - The user can login  with their registered credentials
 - They can add a trip by specifying their source and destination and time frame they wish to depart.
-- They can browse all trips by specifying source, destination, time frame and find other people's trip details if the fall in the overlapping timeframe
+- They can browse all trips by specifying source, destination, time frame and find other people's trip details if they fall in the overlapping timeframe
 - The contact details will be included in the results and they can contact other people they wish to share a ride with
 - If a person wishes to not get contacted by others and not be shown in search results anymore, they can make their trip as finished in the dashboard.
 - Users can also update and delete their trip
