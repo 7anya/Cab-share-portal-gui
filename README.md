@@ -1,4 +1,4 @@
-# 😁 Cab share portal for BPHC
+# 😁 Cab share portal for BPHC- GUI
 
 
 # The requirement for a cab sharing portal
@@ -20,3 +20,6 @@
 - In addition they can also, search for cabs matching their time slot and contact the driver and book their cabs in advance. It is important to note that this is not a real time cab booking feature. Its just a tool to find cabs that are registered in the portal by an Admin. 
 - Admin can add cab details like license plate number, make and model, capacity and Driver name and number, as well as where the driver is available to take bookings and at what times. 
 
+# Tech used
+- Flutter for front end, Compatible with web,IOS and Android 
+- Backend - Flask, Sqlite
