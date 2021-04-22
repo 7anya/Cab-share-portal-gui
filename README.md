@@ -19,4 +19,4 @@
 - Users can also update and delete their trip
 - In addition they can also, search for cabs matching their time slot and contact the driver and book their cabs in advance. It is important to note that this is not a real time cab booking feature. Its just a tool to find cabs that are registered in the portal by an Admin. 
 - Admin can add cab details like license plate number, make and model, capacity and Driver name and number, as well as where the driver is available to take bookings and at what times. 
-- 
+
